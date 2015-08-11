@@ -1,0 +1,44 @@
+{
+  "name": "kv-array",
+  "version": "0.0.1",
+  "description": "Create a {key, value} array from an object.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/nrn/kv-array"
+  },
+  "keywords": [
+    "iterate",
+    "object",
+    "array",
+    "key",
+    "value",
+    "kv"
+  ],
+  "author": "Nick Niemeir <nick.niemeir@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nrn/kv-array/issues"
+  },
+  "homepage": "https://github.com/nrn/kv-array",
+  "devDependencies": {
+    "tape": "^4.0.3"
+  },
+  "dependencies": {},
+  "testling": {
+    "files": "test.js",
+    "browsers": [
+      "ie/6..latest",
+      "chrome/22..latest",
+      "firefox/3.5..latest",
+      "safari/5..latest",
+      "opera/12.0..latest",
+      "iphone/5..latest",
+      "ipad/5..latest",
+      "android-browser/2.3..latest"
+    ]
+  }
+}
