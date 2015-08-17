@@ -1,5 +1,5 @@
 var test = require('tape')
-var kv = require('.')
+var kv = require('./index.js')
 
 test('kv', function (t) {
   t.same(kv({foo: 'bar'}), [{key: 'foo', value:'bar'}], 'simple object')
@@ -36,7 +36,7 @@ test('kv', function (t) {
     ,{key: '2', value:3}
     ], 'array')
 
-  if (typeof Set === 'function') {
+  if (typeof Symbol === 'function') {
     t.same(kv(new Set([1,2,'a'])),
       [{key: '0', value:1}
       ,{key: '1', value:2}
@@ -50,7 +50,13 @@ test('kv', function (t) {
       [{key: 'a', value:1}
       ,{key: 'b', value:2}
       ], 'Map object')
+
+    t.same(kv(map.keys()),
+      [{key: '0', value:'a'}
+      ,{key: '1', value:'b'}
+      ], 'Iterator')
   }
 
   t.end()
 })
+

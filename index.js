@@ -1,42 +1,46 @@
 var has = Object.prototype.hasOwnProperty
-var canBeSet = typeof Set === 'function'
 var canBeMap = typeof Map === 'function'
+var hasSymbol = typeof Symbol === 'function'
 
 module.exports = kv
 
 function kv (stuff) {
-  if (canBeSet && stuff instanceof Set) {
-    return kvSet(stuff)
-  }
+  if (!stuff) return []
   if (canBeMap && stuff instanceof Map) {
     return kvMap(stuff)
+  }
+  if (hasSymbol && Symbol.iterator && stuff[Symbol.iterator]) {
+    return kvIt(stuff[Symbol.iterator]())
   }
   return kvObj(stuff)
 }
 
 function kvObj (obj) {
-  var arr = []
+  var kvArray = []
   for (var i in obj) {
     if (has.call(obj, i)) {
-      arr.push({key: i, value: obj[i]})
+      kvArray.push({ key: i, value: obj[i] })
     }
   }
-  return arr
+  return kvArray
 }
 
-function kvSet (set) {
-  var arr = []
+function kvIt (it) {
+  var kvArray = []
   var inserted = 0
-  set.forEach(function (value) {
-    arr.push({key: ''+inserted++, value: value})
-  })
-  return arr
+  var next = null
+  while (true) {
+    next = it.next()
+    if (next.done) break;
+    kvArray.push({ key: '' + inserted++, value: next.value})
+  }
+  return kvArray
 }
 
 function kvMap (map) {
-  var arr = []
+  var kvArray = []
   map.forEach(function (value, key) {
-    arr.push({key: key, value: value})
+    kvArray.push({ key: key, value: value })
   })
-  return arr
+  return kvArray
 }
