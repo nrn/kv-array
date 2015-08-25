@@ -12,8 +12,8 @@ function Reduced (val) {
 module.exports = kv
 
 function kv (stuff) {
-  return reduce(stuff, function (acc, keyValue) {
-    acc.push(keyValue)
+  return reduce(stuff, function (acc, value, key) {
+    acc.push({key: key, value: value})
     return acc
   }, [])
 }
@@ -30,18 +30,18 @@ function reduce (stuff, fn, acc) {
 }
 
 function kvObj (obj, fn, acc) {
-  var first = true;
+  var first = true
   var next = acc
   for (var i in obj) {
     if (has.call(obj, i)) {
      if (first) {
        first = false
        if (typeof next === 'undefined') {
-         next = { key: i, value: obj[i] }
+         next = obj[i]
          continue
        }
      }
-     next = fn(next, { key: i, value: obj[i] })
+     next = fn(next, obj[i], i)
      if (next instanceof Reduced) return next.val
     }
   }
@@ -59,11 +59,12 @@ function kvIt (it, fn, acc) {
     if (first) {
       first = false
       if (typeof next === 'undefined') {
-        next = { key: '' + inserted++, value: step.value}
+        inserted++
+        next = step.value
         continue
       }
     }
-    next = fn(next, { key: '' + inserted++, value: step.value})
+    next = fn(next, step.value, '' + inserted++)
     if (next instanceof Reduced) return next.val
   }
   return next
@@ -80,11 +81,11 @@ function kvMap (map, fn, acc) {
     if (first) {
       first = false
       if (typeof next === 'undefined') {
-        next = { key: step.value[0], value: step.value[1]}
+        next = step.value[1]
         continue
       }
     }
-    next = fn(next, { key: step.value[0], value: step.value[1]})
+    next = fn(next, step.value[1], step.value[0])
     if (next instanceof Reduced) return next.val
   }
   return next
