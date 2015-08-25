@@ -1,6 +1,6 @@
 {
   "name": "kv-array",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Create a {key, value} array from an object.",
   "main": "index.js",
   "scripts": {
@@ -27,5 +27,7 @@
   "devDependencies": {
     "tape": "^4.0.3"
   },
-  "dependencies": {}
+  "dependencies": {
+    "universal-reduce": "^1.0.1"
+  }
 }
