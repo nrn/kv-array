@@ -2,6 +2,13 @@ var has = Object.prototype.hasOwnProperty
 var canBeMap = typeof Map === 'function'
 var hasSymbol = typeof Symbol === 'function'
 
+reduce.reduced = Reduced
+
+function Reduced (val) {
+  if (!(this instanceof Reduced)) return new Reduced(val)
+  this.val = val
+}
+
 module.exports = kv
 
 function kv (stuff) {
@@ -35,6 +42,7 @@ function kvObj (obj, fn, acc) {
        }
      }
      next = fn(next, { key: i, value: obj[i] })
+     if (next instanceof Reduced) return next.val
     }
   }
   return next
@@ -56,6 +64,7 @@ function kvIt (it, fn, acc) {
       }
     }
     next = fn(next, { key: '' + inserted++, value: step.value})
+    if (next instanceof Reduced) return next.val
   }
   return next
 }
@@ -76,6 +85,7 @@ function kvMap (map, fn, acc) {
       }
     }
     next = fn(next, { key: step.value[0], value: step.value[1]})
+    if (next instanceof Reduced) return next.val
   }
   return next
 }
