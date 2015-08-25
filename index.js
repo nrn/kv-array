@@ -5,42 +5,77 @@ var hasSymbol = typeof Symbol === 'function'
 module.exports = kv
 
 function kv (stuff) {
-  if (!stuff) return []
+  return reduce(stuff, function (acc, keyValue) {
+    acc.push(keyValue)
+    return acc
+  }, [])
+}
+
+function reduce (stuff, fn, acc) {
+  if (!stuff) return acc
   if (canBeMap && stuff instanceof Map) {
-    return kvMap(stuff)
+    return kvMap(stuff, fn, acc)
   }
   if (hasSymbol && Symbol.iterator && stuff[Symbol.iterator]) {
-    return kvIt(stuff[Symbol.iterator]())
+    return kvIt(stuff[Symbol.iterator](), fn, acc)
   }
-  return kvObj(stuff)
+  return kvObj(stuff, fn, acc)
 }
 
-function kvObj (obj) {
-  var kvArray = []
+function kvObj (obj, fn, acc) {
+  var first = true;
+  var next = acc
   for (var i in obj) {
     if (has.call(obj, i)) {
-      kvArray.push({ key: i, value: obj[i] })
+     if (first) {
+       first = false
+       if (typeof next === 'undefined') {
+         next = { key: i, value: obj[i] }
+         continue
+       }
+     }
+     next = fn(next, { key: i, value: obj[i] })
     }
   }
-  return kvArray
+  return next
 }
 
-function kvIt (it) {
-  var kvArray = []
+function kvIt (it, fn, acc) {
   var inserted = 0
-  var next = null
+  var step = null
+  var next = acc
+  var first = true
   while (true) {
-    next = it.next()
-    if (next.done) break;
-    kvArray.push({ key: '' + inserted++, value: next.value})
+    step = it.next()
+    if (step.done) break;
+    if (first) {
+      first = false
+      if (typeof next === 'undefined') {
+        next = { key: '' + inserted++, value: step.value}
+        continue
+      }
+    }
+    next = fn(next, { key: '' + inserted++, value: step.value})
   }
-  return kvArray
+  return next
 }
 
-function kvMap (map) {
-  var kvArray = []
-  map.forEach(function (value, key) {
-    kvArray.push({ key: key, value: value })
-  })
-  return kvArray
+function kvMap (map, fn, acc) {
+  var step = null
+  var next = acc
+  var first = true
+  var it = map[Symbol.iterator]()
+  while (true) {
+    step = it.next()
+    if (step.done) break;
+    if (first) {
+      first = false
+      if (typeof next === 'undefined') {
+        next = { key: step.value[0], value: step.value[1]}
+        continue
+      }
+    }
+    next = fn(next, { key: step.value[0], value: step.value[1]})
+  }
+  return next
 }
